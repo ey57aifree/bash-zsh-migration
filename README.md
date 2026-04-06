@@ -10,10 +10,6 @@
 
 | Language | Link |
 |----------|------|
-<<<<<<< HEAD
-| 🇬   **English** | [Read English README](#english-readme) |
-| 🇹🇼 **繁體中文** | [閱讀繁體中文說明](#traditional-chinese-readme) |
-=======
 |   **English** | [Read English README](#english-readme) |
 |   **繁體中文** | [閱讀 🇹🇼繁體中文說明](#traditional-chinese-readme) |
 
