@@ -18,7 +18,10 @@
 ## 🚀 Quick Start / 快速開始
 
 ```bash
+git clone https://github.com/ey57aifree/bash-zsh-migration.git
+cd bash-zsh-migration
 ./migrate-bash-to-zsh.sh
+exec zsh
 ```
 
 ---
