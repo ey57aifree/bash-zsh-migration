@@ -22,33 +22,43 @@ print_header() {
 main() {
     print_header
     
-    echo -e "${CYAN}Welcome! Please choose an option to proceed:${NC}"
+    echo -e "${CYAN}Welcome! Please choose your setup goal:${NC}"
     echo ""
-    echo -e "${GREEN}1)${NC} Install Zsh only"
-    echo -e "${GREEN}2)${NC} Migrate from Bash to Zsh only"
-    echo -e "${GREEN}3)${NC} Complete Setup (Install + Migrate)"
+    echo -e "${GREEN}1)${NC} Pure Install Zsh (僅安裝 Zsh)"
+    echo -e "${GREEN}2)${NC} Install Zsh + Migrate from Bash (安裝 Zsh + 遷移設定)"
+    echo -e "${GREEN}3)${NC} Ultimate Setup (安裝 Zsh + 遷移設定 + 安裝外掛)"
+    echo -e "${GREEN}4)${NC} Pure Plugin Install (僅安裝外掛 - 會檢查 Zsh 是否存在)"
     echo -e "${GREEN}q)${NC} Quit"
     echo ""
     
-    read -r -p "Enter your choice [1-3/q]: " choice
+    read -r -p "Enter your choice [1-4/q]: " choice
     echo ""
 
     case $choice in
         1)
-            echo -e "${BLUE}→ Starting Zsh installation...${NC}"
+            echo -e "${BLUE}→ Path: Install Zsh only${NC}"
             ./install-zsh.sh
             ;;
         2)
-            echo -e "${BLUE}→ Starting migration from Bash to Zsh...${NC}"
+            echo -e "${BLUE}→ Path: Install Zsh + Migrate settings${NC}"
+            ./install-zsh.sh
+            echo ""
             ./migrate-bash-to-zsh.sh
             ;;
         3)
-            echo -e "${BLUE}→ Starting complete setup process...${NC}"
+            echo -e "${BLUE}→ Path: Ultimate Setup (Full Experience)${NC}"
             echo -e "${CYAN}Step 1: Installing Zsh...${NC}"
             ./install-zsh.sh
             echo ""
             echo -e "${CYAN}Step 2: Migrating settings...${NC}"
             ./migrate-bash-to-zsh.sh
+            echo ""
+            echo -e "${CYAN}Step 3: Installing recommended plugins...${NC}"
+            ./install-plugins.sh
+            ;;
+        4)
+            echo -e "${BLUE}→ Path: Installing plugins only${NC}"
+            ./install-plugins.sh
             ;;
         q|Q)
             echo "Exiting. Goodbye!"
@@ -65,7 +75,7 @@ main() {
     echo -e "${GREEN}🎉 Process completed successfully!${NC}"
     echo -e "${GREEN}========================================${NC}"
     echo ""
-    echo -e "To apply changes, run: ${CYAN}exec zsh${NC}"
+    echo -e "To apply all changes, run: ${CYAN}exec zsh${NC}"
 }
 
 main "$@"
