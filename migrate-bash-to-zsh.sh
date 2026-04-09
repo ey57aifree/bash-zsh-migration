@@ -15,6 +15,7 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
+CYAN='\033[0;36m'
 NC='\033[0m'
 
 # File paths
@@ -37,6 +38,8 @@ print_header() {
 
 print_info() { echo -e "${GREEN}✓${NC} $1"; }
 print_warning() { echo -e "${YELLOW}⚠${NC} $1"; }
+print_error() { echo -e "${RED}✗${NC} $1"; }
+print_step() { echo -e "${CYAN}→${NC} $1"; }
 
 check_file() {
     local file="$1"
@@ -68,6 +71,95 @@ append_if_not_exists() {
     fi
     ((SKIPPED_ITEMS++))
     return 1
+}
+
+install_zsh() {
+    echo -e "${BLUE}📦 Installing zsh...${NC}"
+    
+    if command -v apt &>/dev/null; then
+        echo "  Using apt package manager..."
+        if ! sudo -S -p '' apt update &>/dev/null; then
+            print_warning "Failed to update package list, continuing anyway..."
+        fi
+        if ! sudo -S -p '' apt install -y zsh &>/dev/null; then
+            print_error "Failed to install zsh"
+            return 1
+        fi
+    elif command -v dnf &>/dev/null; then
+        echo "  Using dnf package manager..."
+        if ! sudo -S -p '' dnf install -y zsh &>/dev/null; then
+            print_error "Failed to install zsh"
+            return 1
+        fi
+    elif command -v yum &>/dev/null; then
+        echo "  Using yum package manager..."
+        if ! sudo -S -p '' yum install -y zsh &>/dev/null; then
+            print_error "Failed to install zsh"
+            return 1
+        fi
+    elif command -v pacman &>/dev/null; then
+        echo "  Using pacman package manager..."
+        if ! sudo -S -p '' pacman -S --noconfirm zsh &>/dev/null; then
+            print_error "Failed to install zsh"
+            return 1
+        fi
+    elif command -v brew &>/dev/null; then
+        echo "  Using Homebrew..."
+        if ! brew install zsh &>/dev/null; then
+            print_error "Failed to install zsh"
+            return 1
+        fi
+    else
+        print_error "Unsupported package manager. Please install zsh manually."
+        return 1
+    fi
+    
+    print_info "Zsh installed successfully!"
+    return 0
+}
+
+check_zsh_installed() {
+    echo -e "${BLUE}🔍 Checking zsh installation...${NC}"
+    
+    if command -v zsh &>/dev/null; then
+        local version
+        version=$(zsh --version 2>&1 | /usr/bin/head -n1)
+        print_info "Zsh is installed: $version"
+        return 0
+    else
+        print_error "Zsh is NOT installed on your system"
+        echo ""
+        echo -e "${YELLOW}Would you like to install zsh now? [Y/n]${NC}"
+        read -r -p "" response
+        
+        if [[ "$response" =~ ^[Nn]$ ]]; then
+            echo ""
+            echo -e "${YELLOW}Installation instructions:${NC}"
+            echo ""
+            
+            if command -v apt &>/dev/null; then
+                echo -e "  ${GREEN}sudo -S -p '' apt update && sudo -S -p '' apt install zsh${NC}"
+            elif command -v dnf &>/dev/null; then
+                echo -e "  ${GREEN}sudo -S -p '' dnf install zsh${NC}"
+            elif command -v yum &>/dev/null; then
+                echo -e "  ${GREEN}sudo -S -p '' yum install zsh${NC}"
+            elif command -v pacman &>/dev/null; then
+                echo -e "  ${GREEN}sudo -S -p '' pacman -S zsh${NC}"
+            else
+                echo "  Please install zsh from your distribution's repository."
+            fi
+            echo ""
+            return 1
+        fi
+        
+        # Auto install
+        if install_zsh; then
+            return 0
+        else
+            print_error "Installation failed. Please install zsh manually."
+            return 1
+        fi
+    fi
 }
 
 migrate_settings() {
@@ -140,14 +232,26 @@ merge_history() {
 setup_zsh_options() {
     echo -e "${BLUE}⚙️  Setting up zsh options...${NC}"
     
+    # Add a separator if file has content
+    if check_file "$ZSHRC"; then
+        echo '' >> "$ZSHRC"
+    fi
+    
+    echo '# ========================================
+# Zsh Options (auto-configured by migrate-bash-to-zsh.sh)
+# ==========================================' >> "$ZSHRC"
     echo '' >> "$ZSHRC"
-    echo '# Zsh Options (auto-configured)' >> "$ZSHRC"
+    echo '# History settings' >> "$ZSHRC"
     echo 'HISTFILE=~/.zsh_history' >> "$ZSHRC"
     echo 'HISTSIZE=10000' >> "$ZSHRC"
     echo 'SAVEHIST=10000' >> "$ZSHRC"
     echo 'setopt EXTENDED_HISTORY INC_APPEND_HISTORY SHARE_HISTORY' >> "$ZSHRC"
     echo 'setopt HIST_IGNORE_DUPS HIST_IGNORE_ALL_DUPS' >> "$ZSHRC"
+    echo '' >> "$ZSHRC"
+    echo '# Completion settings' >> "$ZSHRC"
     echo 'setopt AUTO_MENU AUTO_LIST COMPLETE_IN_WORD MENU_COMPLETE' >> "$ZSHRC"
+    echo '' >> "$ZSHRC"
+    echo '# Quality of Life settings' >> "$ZSHRC"
     echo 'setopt NO_BEep AUTO_PUSHD PUSHD_IGNORE_DUPS CDABLE_VARS AUTO_CD' >> "$ZSHRC"
     echo 'setopt GLOB_COMPLETE HASH_LIST_ALL LIST_TYPES' >> "$ZSHRC"
     
@@ -160,16 +264,16 @@ generate_report() {
     print_header
     echo -e "${GREEN}✅ Migration complete!${NC}"
     echo ""
-    echo "Statistics:"
+    echo -e "${CYAN}Statistics:${NC}"
     echo "  • Migrated: $MIGRATED_ITEMS items"
     echo "  • Skipped (duplicates): $SKIPPED_ITEMS items"
     echo ""
-    echo "Next steps:"
+    echo -e "${CYAN}Next steps:${NC}"
     echo "  1. Review ~/.zshrc content"
     echo "  2. Run: source ~/.zshrc"
     echo "  3. Or restart terminal"
     echo ""
-    echo "Recommendations:"
+    echo -e "${CYAN}Recommendations:${NC}"
     echo "  • Install oh-my-zsh or zinit"
     echo "  • Install zsh-autosuggestions and zsh-syntax-highlighting"
     echo ""
@@ -179,6 +283,13 @@ main() {
     print_header
     
     echo "Starting bash to zsh migration..."
+    echo ""
+    
+    # Check if zsh is installed FIRST
+    if ! check_zsh_installed; then
+        exit 1
+    fi
+    
     echo ""
     
     # Backup existing zshrc
