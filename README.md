@@ -1,8 +1,8 @@
-# Bash to Zsh Migration Tool / Bash 到 Zsh 遷移工具
+# Zsh Install & Migrate / Zsh 安裝與遷移工具
 
-**Complete automation script for migrating bash configuration to zsh.**
+**The complete automation suite for onboarding into Zsh. From installation and Bash configuration migration to essential plugin setup.**
 
-**完整的自動化腳本，用於將 bash 設定遷移到 zsh。**
+**一套完整的 Zsh 部署自動化套件。涵蓋了從安裝 Zsh、遷移 Bash 設定到配置核心外掛的全過程。**
 
 ---
 
@@ -18,9 +18,14 @@
 ## 🚀 Quick Start / 快速開始
 
 ```bash
+# 1. Clone the repository
 git clone https://github.com/ey57aifree/zsh-install-and-migrate.git
 cd zsh-install-and-migrate
-./migrate-bash-to-zsh.sh
+
+# 2. Run the interactive setup wizard
+./setup.sh
+
+# 3. Apply changes and enter Zsh
 exec zsh
 ```
 
@@ -30,117 +35,27 @@ exec zsh
 
 ## 📖 English README
 
----
+### 🌟 Overview
+This tool simplifies the transition from Bash to Zsh. Instead of manually copying configs and hunting for plugin installation guides, `setup.sh` provides an interactive menu to customize your deployment.
 
-### Features
+### 🛠️ Interactive Menu Options
+When you run `./setup.sh`, you can choose from the following paths:
 
-- **PATH Migration** - Migrate all PATH exports from `.bashrc` and `.bash_profile`
-- **Environment Variables** - Migrate LANG, LC_, EDITOR, VISUAL, TERM settings
-- **Aliases** - Migrate all bash aliases
-- **History Merge** - Merge bash history into zsh history (deduplicated)
-- **Zsh Options** - Auto-configure recommended zsh options
-- **Backup** - Automatic timestamped backup of existing `.zshrc`
-- **Idempotent** - Safe to run multiple times (skips duplicates)
-- **Colored Output** - Clear visual feedback with statistics
+| Option | Name | Description |
+|---|---|---|
+| **1** | **Pure Install Zsh** | Installs Zsh using your system's package manager. |
+| **2** | **Install + Migrate** | Installs Zsh AND migrates your `.bashrc` / `.bash_profile` settings. |
+| **3** | **Ultimate Setup** | **(Recommended)** Full pipeline: Install $\rightarrow$ Migrate $\rightarrow$ Setup Plugins. |
+| **4** | **Pure Plugin Install** | Installs recommended plugins (checks for Zsh installation first). |
 
-### Migration Content
+### 🔌 Installed Plugins
+The "Ultimate Setup" or "Plugin Install" options will automatically configure:
+- **`zsh-autosuggestions`**: Suggests commands based on your history as you type.
+- **`zsh-syntax-highlighting`**: Provides real-time visual feedback on command correctness.
 
-| Source File | What Gets Migrated |
-|-------------|-------------------|
-| `~/.bashrc` | PATH, environment variables, aliases |
-| `~/.bash_profile` | PATH, environment variables, aliases |
-| `~/.bash_history` | Merged into `~/.zsh_history` |
-
-### Example Output
-
-```
-========================================
-   bash → zsh Migration Tool
-========================================
-
-📖 Processing ~/.bashrc...
-  → PATH settings...
-    + export PATH="$HOME/.local/bin:$PATH"
-  → Aliases...
-    + alias ll="ls -la"
-
-📚 Merging history...
-✓ Merged bash history
-
-⚙️  Setting up zsh options...
-✓ Zsh options configured
-
-========================================
-✅ Migration complete!
-
-Statistics:
-  • Migrated: 15 items
-  • Skipped (duplicates): 2 items
-
-Next steps:
-  1. Review ~/.zshrc content
-  2. Run: source ~/.zshrc
-  3. Or restart terminal
-```
-
-### Zsh Options Configured
-
-```bash
-# History
-HISTFILE=~/.zsh_history
-HISTSIZE=10000
-SAVEHIST=10000
-setopt EXTENDED_HISTORY INC_APPEND_HISTORY SHARE_HISTORY
-setopt HIST_IGNORE_DUPS HIST_IGNORE_ALL_DUPS
-
-# Completion
-setopt AUTO_MENU AUTO_LIST COMPLETE_IN_WORD MENU_COMPLETE
-
-# Quality of Life
-setopt NO_BEep AUTO_PUSHD PUSHD_IGNORE_DUPS CDABLE_VARS AUTO_CD
-setopt GLOB_COMPLETE HASH_LIST_ALL LIST_TYPES
-```
-
-### Recommendations After Migration
-
-#### 1. Install a zsh framework
-
-**Oh My Zsh (Full-featured):**
-```bash
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-```
-
-**Zinit (Lightweight):**
-```bash
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/zinit-across-os.sh)"
-```
-
-#### 2. Install recommended plugins
-
-- **zsh-autosuggestions** - Autocomplete from history
-- **zsh-syntax-highlighting** - Syntax highlighting
-
-#### 3. Verify migration
-
-```bash
-which <your-command>  # Check PATH
-alias                 # Check aliases
-echo $PATH            # Check PATH content
-```
-
-### FAQ
-
-**Q: Why can't some commands be found after running the script?**  
-A: Run `source ~/.zshrc` to reload settings, or restart your terminal.
-
-**Q: Can I safely run this script multiple times?**  
-A: Yes! The script is idempotent - it will skip existing settings.
-
-**Q: What if I don't want to migrate certain settings?**  
-A: After running the script, manually edit `~/.zshrc` to remove unwanted entries.
-
-**Q: Where are backup files stored?**  
-A: Backup files are named `~/.zshrc.bak.YYYYMMDD_HHMMSS` in your home directory.
+### 🔑 Default Shell
+The migration script will ask if you want to set Zsh as your **default shell** (`chsh`). 
+**Important**: If you accept, you must log out and log back in (or restart your SSH session) for the change to take effect.
 
 ---
 
@@ -148,123 +63,35 @@ A: Backup files are named `~/.zshrc.bak.YYYYMMDD_HHMMSS` in your home directory.
 
 ## 📖 繁體中文說明
 
----
+### 🌟 專案簡介
+本工具旨在簡化從 Bash 遷移到 Zsh 的過程。你不再需要手動複製設定檔或搜尋外掛安裝教學，透過 `setup.sh` 的互動式選單，即可快速完成所有部署。
 
-### 功能特色
+### 🛠️ 互動式選單說明
+執行 `./setup.sh` 後，你可以根據需求選擇不同的路徑：
 
-- **PATH 遷移** - 從 `.bashrc` 和 `.bash_profile` 遷移所有 PATH 設定
-- **環境變數** - 遷移 LANG、LC_、EDITOR、VISUAL、TERM 等設定
-- **別名（Aliases）** - 遷移所有 bash 別名
-- **歷史記錄合併** - 將 bash 歷史記錄合併到 zsh 歷史記錄（自動去重）
-- **Zsh 選項設定** - 自動配置推薦的 zsh 選項
-- **自動備份** - 為現有的 `.zshrc` 建立時間戳記備份
-- **冪等設計** - 可安全重複執行（跳過重複項目）
-- **彩色輸出** - 清晰的視覺反饋與統計資訊
+| 選項 | 名稱 | 說明 |
+|---|---|---|
+| **1** | **僅安裝 Zsh** | 使用系統套件管理器安裝 Zsh。 |
+| **2** | **安裝 + 遷移** | 安裝 Zsh 並將 `.bashrc` / `.bash_profile` 的設定遷移至 Zsh。 |
+| **3** | **終極全安裝** | **(推薦)** 完整流程：安裝 $\rightarrow$ 遷移 $\rightarrow$ 配置外掛。 |
+| **4** | **僅安裝外掛** | 安裝推薦外掛（會先行檢查 Zsh 是否已安裝）。 |
 
-### 遷移內容
+### 🔌 內建推薦外掛
+選擇「終極全安裝」或「僅安裝外掛」將會自動配置：
+- **`zsh-autosuggestions`**：根據歷史記錄在輸入時提供智能建議。
+- **`zsh-syntax-highlighting`**：對指令進行即時顯色，讓你知道指令是否正確。
 
-| 來源檔案 | 遷移內容 |
-|----------|----------|
-| `~/.bashrc` | PATH、環境變數、別名 |
-| `~/.bash_profile` | PATH、環境變數、別名 |
-| `~/.bash_history` | 合併到 `~/.zsh_history` |
+### 🔑 預設 Shell 設定
+遷移過程中，腳本會詢問你是否要將 Zsh 設為**系統預設 Shell** (`chsh`)。
+**重要提示**：若選擇同意，你必須 **登出並重新登入**（或重新開啟 SSH 連線），預設 Shell 的變更才會生效。
 
-### 執行範例
-
-```
-========================================
-   bash → zsh Migration Tool
-========================================
-
-📖 Processing ~/.bashrc...
-  → PATH settings...
-    + export PATH="$HOME/.local/bin:$PATH"
-  → Environment variables...
-    + export LANG="zh_TW.UTF-8"
-  → Aliases...
-    + alias ll="ls -la"
-    + alias gs="git status"
-
-📚 Merging history...
-✓ Merged bash history
-
-⚙️  Setting up zsh options...
-✓ Zsh options configured
-
-========================================
-✅ Migration complete!
-
-Statistics:
-  • Migrated: 15 items
-  • Skipped (duplicates): 2 items
-
-Next steps:
-  1. Review ~/.zshrc content
-  2. Run: source ~/.zshrc
-  3. Or restart terminal
-```
-
-### 自動配置的 Zsh 選項
-
-```bash
-# 歷史記錄設定
-HISTFILE=~/.zsh_history
-HISTSIZE=10000
-SAVEHIST=10000
-setopt EXTENDED_HISTORY INC_APPEND_HISTORY SHARE_HISTORY
-setopt HIST_IGNORE_DUPS HIST_IGNORE_ALL_DUPS
-
-# 自動補完成
-setopt AUTO_MENU AUTO_LIST COMPLETE_IN_WORD MENU_COMPLETE
-
-# 使用體驗
-setopt NO_BEep AUTO_PUSHD PUSHD_IGNORE_DUPS CDABLE_VARS AUTO_CD
-setopt GLOB_COMPLETE HASH_LIST_ALL LIST_TYPES
-```
-
-### 遷移後的建議設定
-
-#### 1. 安裝 Zsh 框架
-
-**Oh My Zsh（功能完整）：**
-```bash
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-```
-
-**Zinit（輕量級）：**
-```bash
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/zinit-across-os.sh)"
-```
-
-#### 2. 安裝推薦外掛
-
-- **zsh-autosuggestions** - 根據歷史記錄自動建議命令
-- **zsh-syntax-highlighting** - 命令語法高亮顯示
-
-#### 3. 驗證遷移結果
-
-```bash
-which <你的命令>    # 檢查 PATH 是否正確
-alias              # 檢查別名是否遷移成功
-echo $PATH         # 檢視 PATH 內容
-```
-
-### 常見問題
-
-**Q: 為什麼執行腳本後某些命令還是找不到？**  
-A: 請執行 `source ~/.zshrc` 重新載入設定，或重新啟動終端機。
-
-**Q: 可以安全重複執行這個腳本嗎？**  
-A: 可以！腳本採用冪等設計，重複執行會自動跳過已存在的設定。
-
-**Q: 如果我不想遷移某些設定怎麼辦？**  
-A: 執行腳本後，手動編輯 `~/.zshrc` 移除不需要的項目即可。
-
-**Q: 備份檔案存在哪裡？**  
-A: 備份檔案命名為 `~/.zshrc.bak.YYYYMMDD_HHMMSS`，存在主目錄中。
+### 📝 遷移內容
+- **PATH 遷移**：從 Bash 設定檔提取所有 PATH exports。
+- **環境變數**：遷移 LANG, LC_, EDITOR 等重要設定。
+- **別名 (Aliases)**：遷移所有 bash aliases。
+- **歷史記錄**：將 `.bash_history` 合併至 `.zsh_history` 並去重。
 
 ---
 
 ## 📄 License
-
 MIT License
