@@ -66,10 +66,10 @@ append_if_not_exists() {
     
     if ! line_exists "$line" "$file"; then
         echo "$line" >> "$real_path"
-        ((MIGRATED_ITEMS++))
+        MIGRATED_ITEMS=$((MIGRATED_ITEMS + 1))
         return 0
     fi
-    ((SKIPPED_ITEMS++))
+    SKIPPED_ITEMS=$((SKIPPED_ITEMS + 1))
     return 1
 }
 
@@ -223,7 +223,7 @@ merge_history() {
             /bin/cp "$bash_hist" "$zsh_hist"
         fi
         print_info "Merged bash history"
-        ((MIGRATED_ITEMS++))
+        MIGRATED_ITEMS=$((MIGRATED_ITEMS + 1))
     else
         print_warning "No bash history found"
     fi
@@ -256,7 +256,7 @@ setup_zsh_options() {
     echo 'setopt GLOB_COMPLETE HASH_LIST_ALL LIST_TYPES' >> "$ZSHRC"
     
     print_info "Zsh options configured"
-    ((MIGRATED_ITEMS++))
+    MIGRATED_ITEMS=$((MIGRATED_ITEMS + 1))
 }
 
 generate_report() {
